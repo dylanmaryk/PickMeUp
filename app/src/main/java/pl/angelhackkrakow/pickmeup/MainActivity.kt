@@ -7,6 +7,8 @@ import ai.api.model.AIError
 import ai.api.model.AIResponse
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -61,15 +63,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun proceedBadMood() {
-        showWhatSaid("Bad mood")
     }
 
     private fun proceedOkMood() {
-        showWhatSaid("Ok mood")
     }
 
     private fun proceedGoodMood() {
-        showWhatSaid("Good mood")
+
     }
 
     class MoodListener(
@@ -97,14 +97,19 @@ class MainActivity : AppCompatActivity() {
         var onOkMood: () -> Unit = {}
         var onBadMood: () -> Unit = {}
 
+        private val gson by lazy {
+            GsonBuilder().setPrettyPrinting().create()
+        }
 
         override fun onResult(result: AIResponse) {
+//            Log.d("onResult", gson.toJson(result))
             saidThis(result.result.resolvedQuery)
             sayThis(result.result.fulfillment.speech)
-            processMood(Mood.from(result.result.action))
+            processMood(Mood.from(result.result.parameters.keys))
         }
 
         private fun processMood(mood: Mood) {
+            Log.d("Mood", mood.mood)
             when (mood) {
                 Mood.BAD -> onBadMood()
                 Mood.OK -> onOkMood()
@@ -121,9 +126,13 @@ class MainActivity : AppCompatActivity() {
 
         companion object {
 
-            fun from(value: String): Mood {
-                return Mood.values()
-                        .firstOrNull { mood -> mood.mood.equals(value, true) } ?: OK
+            fun from(params: Set<String>): Mood {
+                Mood.values().forEach { mood ->
+                    if (params.any { it == mood.mood }) {
+                        return mood
+                    }
+                }
+                return Mood.OK
             }
         }
     }
