@@ -6,9 +6,12 @@ import ai.api.model.AIResponse
 import ai.api.ui.AIButton
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private val micButton by lazy {
+        findViewById<AIButton>(R.id.micButton)
+    }
 
     private val tts by lazy { TTS(this) }
     private val config by lazy {
@@ -20,8 +23,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initMicButton()
-        tts.speak("Hi Mike, how are you feeling today?")
+        tts.init(INIT_SPEECH,  {
+            runOnUiThread {
+                initMicButton()
+            }
+        })
     }
 
     private fun initMicButton() {
@@ -91,5 +97,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val DIALOG_FLOW_TOKEN = "dbb59867471149ecafd254c7263b8fd7"
+        const val INIT_SPEECH = "Hi Mike. How are you feeling today?"
     }
 }
