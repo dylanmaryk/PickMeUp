@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun proceedGoodMood() {
+
     }
 
     class MoodListener(val speech: (String) -> Unit) : AIButton.AIButtonListener {
