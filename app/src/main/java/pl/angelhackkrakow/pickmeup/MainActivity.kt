@@ -13,6 +13,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val tts by lazy { TTS(this) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,8 +30,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onResult(result: AIResponse) {
-
                 Log.d("ApiAi", "onResult")
+                val speech = result.result.fulfillment.speech
+                tts.speak(speech)
             }
 
             override fun onError(error: AIError?) {
