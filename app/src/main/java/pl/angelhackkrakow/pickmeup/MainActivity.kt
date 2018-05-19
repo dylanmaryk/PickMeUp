@@ -6,9 +6,10 @@ import ai.api.model.AIResponse
 import ai.api.ui.AIButton
 import android.Manifest
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -30,13 +31,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onResult(result: AIResponse) {
-                Log.d("ApiAi", "onResult")
+                textView.text = Gson().toJson(result)
                 val speech = result.result.fulfillment.speech
                 tts.speak(speech)
             }
 
             override fun onError(error: AIError?) {
-                Log.d("ApiAi", "onError")
             }
         })
     }
