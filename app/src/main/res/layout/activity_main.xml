@@ -39,7 +39,7 @@
                 android:background="@drawable/rectangle" />
 
             <TextView
-                android:id="@+id/feeling_goo"
+                android:id="@+id/whatWeSaid"
                 android:layout_width="match_parent"
                 android:layout_height="26dp"
                 android:layout_alignParentLeft="true"
