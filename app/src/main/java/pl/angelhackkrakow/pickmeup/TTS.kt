@@ -24,8 +24,9 @@ class TTS(private val context: Context) {
     @JvmOverloads fun speak(text: String, onDone: (() -> Unit) = {}) {
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, Bundle.EMPTY, UUID.randomUUID().toString())
         textToSpeech.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-            override fun onStart(s: String) {
 
+            override fun onStart(s: String) {
+                /**/
             }
 
             override fun onDone(s: String) {

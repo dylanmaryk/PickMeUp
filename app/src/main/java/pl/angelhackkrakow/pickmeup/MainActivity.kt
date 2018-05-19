@@ -1,11 +1,15 @@
 package pl.angelhackkrakow.pickmeup
 
+import ai.api.AIListener
 import ai.api.android.AIConfiguration
 import ai.api.android.AIService
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,14 +18,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createMoodListener(): MoodListener {
-        return MoodListener(
-                { saidThis -> showWhatSaid(saidThis) },
-                { sayThis -> tts.speak(sayThis) })
+        return MoodListener()
                 .apply {
-                    onGoodMood = { proceedGoodMood() }
-                    onOkMood = { proceedOkMood() }
-                    onBadMood = { proceedBadMood() }
-                    onUnknown = { listenAgain() }
+                    onGoodMood = { query, response -> proceedGoodMood(query, response) }
+                    onOkMood = { query, response -> proceedOkMood(query, response) }
+                    onBadMood = { query, response -> proceedBadMood(query, response) }
+                    onUnknown = { query, response -> listenAgain() }
                 }
     }
 
@@ -69,16 +71,37 @@ class MainActivity : AppCompatActivity() {
         whatWeSaid.text = speech
     }
 
-    private fun proceedBadMood() {
+    private fun proceedBadMood(query: String, response: String) {
         displayView = BAD_MOOD
     }
 
-    private fun proceedOkMood() {
-        displayView = OK_MOOD
+    private fun proceedOkMood(query: String, response: String) {
+        proceedGoodMood(query, response)
     }
 
-    private fun proceedGoodMood() {
+    private fun proceedGoodMood(query: String, response: String) {
+        displayView = WHAT_WAS_SAID
+        whatWeSaid.text = query
         displayView = GOOD_MOOD
+        tts.speak(response, {
+            aiService.setListener(createGoodMoodListener())
+            aiService.startListening()
+        })
+    }
+
+    private fun createGoodMoodListener(): AIListener {
+        return GoodMoodListener(
+                this::runSpotify, this::callFamily)
+    }
+
+    private fun runSpotify() {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(NEISTAT_BANGERS)))
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun callFamily() {
+        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "666-666-666"))
+        startActivity(intent)
     }
 
     companion object {
@@ -90,6 +113,7 @@ class MainActivity : AppCompatActivity() {
         const val BAD_MOOD = 5
 
         const val DIALOG_FLOW_TOKEN = "dbb59867471149ecafd254c7263b8fd7"
+        const val NEISTAT_BANGERS = "spotify:user:1244785970:playlist:0YybZd87fuKnKxP5DloOsx"
         const val INIT_SPEECH = "Hi Mike. How are you feeling today?"
     }
 }
