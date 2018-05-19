@@ -6,23 +6,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <ViewAnimator
+        android:id="@+id/viewAnimator"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@android:color/white">
 
-        <ai.api.ui.AIButton
-            android:id="@+id/micButton"
+        <ImageView
+            android:id="@+id/view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher_foreground"
-            android:layout_weight="0.5" />
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/screen_1" />
 
-        <TextView
-            android:id="@+id/textView"
+        <ImageView
+            android:id="@+id/view2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5" />
-    </LinearLayout>
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/screen_2" />
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </View>
+    </ViewAnimator>
 
 </android.support.constraint.ConstraintLayout>
