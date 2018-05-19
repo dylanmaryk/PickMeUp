@@ -9,9 +9,14 @@ import java.util.*
 class TTS(private val context: Context) {
 
     private lateinit var textToSpeech: TextToSpeech
-    fun init(speech: String, onReady: (() -> Unit)) {
+    fun init(
+            speech: String,
+            onReady: (() -> Unit) = {},
+            onPostSpeech: () -> Unit = {}
+    ) {
         textToSpeech = TextToSpeech(context, TextToSpeech.OnInitListener {
-            speak(speech, onReady)
+            onReady()
+            speak(speech, onPostSpeech)
         })
     }
 

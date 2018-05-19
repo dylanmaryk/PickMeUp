@@ -13,6 +13,7 @@ class MoodListener(
     var onGoodMood: () -> Unit = {}
     var onOkMood: () -> Unit = {}
     var onBadMood: () -> Unit = {}
+    var onUnknown: () -> Unit = {}
 
     private val gson by lazy {
         GsonBuilder().setPrettyPrinting().create()
@@ -22,15 +23,21 @@ class MoodListener(
 //            Log.d("onResult", gson.toJson(result))
         saidThis(result.result.resolvedQuery)
         sayThis(result.result.fulfillment.speech)
-        processMood(MainActivity.Mood.from(result.result.parameters.keys))
+        Thread.sleep(1000)
+        processMood(Mood.from(result.result.parameters.keys))
     }
 
-    private fun processMood(mood: MainActivity.Mood) {
+    override fun onListeningFinished() {
+        super.onListeningFinished()
+        Log.d("finished listening", "finished")
+    }
+
+    private fun processMood(mood: Mood) {
         Log.d("Mood", mood.mood)
         when (mood) {
-            MainActivity.Mood.BAD -> onBadMood()
-            MainActivity.Mood.OK -> onOkMood()
-            MainActivity.Mood.GOOD -> onGoodMood()
+            Mood.BAD -> onBadMood()
+            Mood.GOOD -> onGoodMood()
+            else -> onUnknown()
         }
     }
 }

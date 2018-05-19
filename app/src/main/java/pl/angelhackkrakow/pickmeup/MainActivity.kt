@@ -4,12 +4,25 @@ import ai.api.android.AIConfiguration
 import ai.api.android.AIService
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private val aiService by lazy {
-        AIService.getService(this, config)
+        AIService.getService(this, config).apply { setListener(createMoodListener()) }
+    }
+
+    private fun createMoodListener(): MoodListener {
+        return MoodListener(
+                { saidThis -> showWhatSaid(saidThis) },
+                { sayThis -> tts.speak(sayThis) })
+                .apply {
+                    onGoodMood = { proceedGoodMood() }
+                    onOkMood = { proceedOkMood() }
+                    onBadMood = { proceedBadMood() }
+                    onUnknown = { listenAgain() }
+                }
     }
 
     private val config by lazy {
@@ -17,6 +30,7 @@ class MainActivity : AppCompatActivity() {
                 ai.api.AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System)
     }
+
     private val tts by lazy { TTS(this) }
 
     private var displayView: Int
@@ -28,32 +42,30 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        tts.init(INIT_SPEECH, {
-            runOnUiThread {
-                displayView = LISTENING
-                startListening()
-            }
-        })
+        tts.init(INIT_SPEECH, this::onReady, this::onPostSpeech)
+    }
+
+    private fun onReady() {
+        displayView = HI_MIKE
+    }
+
+    private fun onPostSpeech() {
+        runOnUiThread {
+            displayView = LISTENING
+            startListening()
+        }
     }
 
     private fun startListening() {
-        aiService.setListener(createMoodListener())
         aiService.startListening()
     }
 
-    private fun createMoodListener(): MoodListener {
-        return MoodListener(
-                { wasSaid -> showWhatSaid(wasSaid) },
-                { sayThis -> tts.speak(sayThis) })
-                .apply {
-                    onGoodMood = { proceedGoodMood() }
-                    onOkMood = { proceedOkMood() }
-                    onBadMood = { proceedBadMood() }
-                }
+    private fun listenAgain() {
+        displayView = LISTENING
+        aiService.startListening()
     }
 
     private fun showWhatSaid(speech: String) {
-        displayView = WHAT_WAS_SAID
         whatWeSaid.text = speech
     }
 

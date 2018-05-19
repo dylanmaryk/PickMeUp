@@ -9,25 +9,17 @@
     <ViewAnimator
         android:id="@+id/viewAnimator"
         android:layout_width="match_parent"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out"
         android:layout_height="match_parent"
         android:background="@android:color/white">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
-        </FrameLayout>
 
         <ImageView
             android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            app:srcCompat="@drawable/screen_1" />
+            app:srcCompat="@drawable/hi_mike" />
 
         <ImageView
             android:id="@+id/view2"
