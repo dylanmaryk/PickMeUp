@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
     <ViewAnimator
@@ -12,10 +12,21 @@
         android:layout_height="match_parent"
         android:background="@android:color/white">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
         <ImageView
             android:id="@+id/view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:scaleType="fitXY"
             app:srcCompat="@drawable/screen_1" />
 
         <ImageView
@@ -33,8 +44,8 @@
                 android:layout_width="323dp"
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="26dp"
                 android:layout_alignParentTop="true"
+                android:layout_marginLeft="26dp"
                 android:layout_marginTop="59dp"
                 android:background="@drawable/rectangle" />
 
@@ -43,8 +54,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="26dp"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="69dp"
                 android:layout_alignParentTop="true"
+                android:layout_marginLeft="69dp"
                 android:layout_marginTop="68dp"
                 android:textAppearance="@style/feeling_goo" />
 
@@ -52,8 +63,8 @@
                 android:layout_width="14dp"
                 android:layout_height="19dp"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="43dp"
                 android:layout_alignParentTop="true"
+                android:layout_marginLeft="43dp"
                 android:layout_marginTop="69dp"
                 android:background="@drawable/vector" />
 
@@ -61,11 +72,31 @@
                 android:layout_width="4dp"
                 android:layout_height="18dp"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="338dp"
                 android:layout_alignParentTop="true"
+                android:layout_marginLeft="338dp"
                 android:layout_marginTop="26dp"
                 android:background="@drawable/dots_menu" />
         </RelativeLayout>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/okmood" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/okmood" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/badmood" />
+
+
     </ViewAnimator>
 
 </android.support.constraint.ConstraintLayout>
