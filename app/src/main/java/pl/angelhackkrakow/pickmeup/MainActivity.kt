@@ -33,7 +33,11 @@ class MainActivity : AppCompatActivity() {
                 override fun onResult(result: AIResponse?) {
                     val speech = result?.result?.fulfillment?.speech
                     speech?.let {
-                        tts.speak(speech)
+                        tts.speak(it)
+                    }
+                    val resolvedQuery = result?.result?.resolvedQuery
+                    resolvedQuery?.let {
+                        feeling_goo.text = it
                     }
                     viewAnimator.showNext()
                 }

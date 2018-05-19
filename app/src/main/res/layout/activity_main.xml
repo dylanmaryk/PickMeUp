@@ -24,12 +24,48 @@
             android:layout_height="match_parent"
             app:srcCompat="@drawable/screen_2" />
 
-        <View
+        <RelativeLayout
             android:id="@+id/view3"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </View>
+            <RelativeLayout
+                android:layout_width="323dp"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="26dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="59dp"
+                android:background="@drawable/rectangle" />
+
+            <TextView
+                android:id="@+id/feeling_goo"
+                android:layout_width="140dp"
+                android:layout_height="26dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="69dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="68dp"
+                android:textAppearance="@style/feeling_goo" />
+
+            <View
+                android:layout_width="14dp"
+                android:layout_height="19dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="43dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="69dp"
+                android:background="@drawable/vector" />
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="18dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="338dp"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="26dp"
+                android:background="@drawable/dots_menu" />
+        </RelativeLayout>
     </ViewAnimator>
 
 </android.support.constraint.ConstraintLayout>
