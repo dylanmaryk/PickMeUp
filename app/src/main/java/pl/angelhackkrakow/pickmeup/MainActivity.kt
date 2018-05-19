@@ -69,22 +69,6 @@ class MainActivity : AppCompatActivity() {
         displayView = GOOD_MOOD
     }
 
-
-    enum class Mood(val mood: String) {
-        BAD("BadMood"), OK("OkMood"), GOOD("GoodMood");
-
-        companion object {
-            fun from(params: Set<String>): Mood {
-                Mood.values().forEach { mood ->
-                    if (params.any { it == mood.mood }) {
-                        return mood
-                    }
-                }
-                return Mood.OK
-            }
-        }
-    }
-
     companion object {
         const val HI_MIKE = 0
         const val LISTENING = 1
