@@ -17,16 +17,17 @@ class TTS(private val context: Context) {
     ) {
         textToSpeech = TextToSpeech(context, TextToSpeech.OnInitListener {
             onReady()
-            speak(speech, Runnable { onPostSpeech() })
+            speak(speech, {}, { onPostSpeech() })
         })
     }
 
 
-    @JvmOverloads fun speak(text: String, onDone: Runnable) {
+    @JvmOverloads fun speak(text: String,  onStart: (() -> Unit), onDone: () -> Unit) {
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, Bundle.EMPTY, UUID.randomUUID().toString())
         textToSpeech.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
 
             override fun onStart(s: String) {
+                (context as Activity).runOnUiThread(onStart)
                 /**/
             }
 
