@@ -3,6 +3,7 @@ package pl.angelhackkrakow.pickmeup
 import ai.api.AIListener
 import ai.api.android.AIConfiguration
 import ai.api.android.AIService
+import ai.api.model.AIResponse
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
@@ -32,10 +33,43 @@ class MainActivity : AppCompatActivity() {
     private fun proceedLonely(query: String, response: String) {
         displayView = LONELY_MOOD
         tts.speak(response, Runnable {
-            aiService.stopListening()
+            aiService.setListener(createMeetupListener())
             aiService.startListening()
             Log.d("proceedLonely", "on Done speaking  lonely")
         })
+    }
+
+    private fun createMeetupListener(): AIListener {
+        return MeetupListener().apply {
+            onYes = { query, speech -> proceedMeetupYes(query, speech) }
+            onNo = { proceedMeetupNo() }
+        }
+    }
+
+    private fun proceedMeetupNo() {
+        /*empty*/
+    }
+
+    private fun proceedMeetupYes(query: String, speech: String) {
+        displayView = MEETUP_TYPE
+        tts.speak(speech, Runnable {
+            displayView = LISTENING
+            aiService.setListener(meetupTypeListenr())
+            aiService.startListening()
+        })
+    }
+
+    fun meetupTypeListenr(): AIListener {
+        return object : SimplifiedAIListener() {
+            override fun onResult(result: AIResponse) {
+                val keyword = result.result.resolvedQuery
+                this@MainActivity.runOnUiThread {
+                    displayView = LOOKING_FOR_MEETUP
+                    Thread.sleep(500)
+                    launchMeetup(keyword)
+                }
+            }
+        }
     }
 
     private fun proceedYesNoMeetup() {
@@ -130,7 +164,7 @@ class MainActivity : AppCompatActivity() {
 
     fun createMeetupUri(keyword: String): Uri {
         return Uri.parse(
-                "https://www.meetup.com/find/events/?allMeetups=false&keywords=$keyword&radius=100&userFreeform=Warsaw%2C+Poland&mcId=z1032106&mcName=Warsaw%2C+PL&eventFilter=mysugg"
+                "https://www.meetup.com/find/events/?allMeetups=false&keywords=$keyword&radius=100&userFreeform=Warsaw%2C+Poland&mcId=z1032106&mcName=Krakow%2C+PL&eventFilter=mysugg"
         )
     }
 
@@ -143,6 +177,7 @@ class MainActivity : AppCompatActivity() {
         const val BAD_MOOD = 5
         const val LONELY_MOOD = 6
         const val MEETUP_TYPE = 7
+        const val LOOKING_FOR_MEETUP = 8
 
         const val DIALOG_FLOW_TOKEN = "dbb59867471149ecafd254c7263b8fd7"
         const val NEISTAT_BANGERS = "spotify:user:1244785970:playlist:0YybZd87fuKnKxP5DloOsx"
