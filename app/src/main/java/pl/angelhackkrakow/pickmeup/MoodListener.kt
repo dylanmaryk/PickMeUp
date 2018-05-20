@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder
 
 class MoodListener() : SimplifiedAIListener() {
 
+    var onDidFinishListening: () -> Unit = {}
     var onGoodMood: (query: String, response: String) -> Unit = { _, _ -> }
     var onOkMood: (query: String, response: String) -> Unit = { _, _ -> }
     var onBadMood: (query: String, response: String) -> Unit = { _, _ -> }
@@ -16,9 +17,13 @@ class MoodListener() : SimplifiedAIListener() {
     }
 
     override fun onResult(result: AIResponse) {
-//            Log.d("onResult", gson.toJson(result))
+        Log.d("onResult", gson.toJson(result))
         Thread.sleep(1000)
         processMood(Mood.from(result.result.parameters.keys), result)
+    }
+
+    override fun onListeningFinished() {
+        onDidFinishListening()
     }
 
     private fun query(result: AIResponse): String {

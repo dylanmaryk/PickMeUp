@@ -37,7 +37,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'ai.api:libai:1.6.12'
     implementation 'ai.api:sdk:2.0.5@aar'
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.4'
     implementation 'commons-io:commons-io:2.5'
     implementation 'com.google.code.gson:gson:2.8.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
 }

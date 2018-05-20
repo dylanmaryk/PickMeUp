@@ -1,5 +1,6 @@
 package pl.angelhackkrakow.pickmeup
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
@@ -16,17 +17,19 @@ class TTS(private val context: Context) {
     ) {
         textToSpeech = TextToSpeech(context, TextToSpeech.OnInitListener {
             onReady()
-            speak(speech, onPostSpeech)
+            speak(speech, {}, onPostSpeech)
         })
     }
 
 
-    @JvmOverloads fun speak(text: String, onDone: (() -> Unit) = {}) {
+    @JvmOverloads fun speak(text: String, onStart: (() -> Unit) = {}, onDone: (() -> Unit) = {}) {
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, Bundle.EMPTY, UUID.randomUUID().toString())
         textToSpeech.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
 
             override fun onStart(s: String) {
-                /**/
+                (context as Activity).runOnUiThread {
+                    onStart.invoke()
+                }
             }
 
             override fun onDone(s: String) {

@@ -9,6 +9,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.runBlocking
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     private fun createMoodListener(): MoodListener {
         return MoodListener()
                 .apply {
+                    onDidFinishListening = { displayView = WHAT_WAS_SAID }
                     onGoodMood = { query, response -> proceedGoodMood(query, response) }
                     onOkMood = { query, response -> proceedOkMood(query, response) }
                     onBadMood = { query, response -> proceedBadMood(query, response) }
@@ -73,8 +76,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun proceedBadMood(query: String, response: String) {
-        displayView = BAD_MOOD
+        whatWeSaid.text = query
         tts.speak(response, {
+            displayView = BAD_MOOD
+            runBlocking {
+                delay(1000)
+            }
+        }, {
             aiService.setListener(createGoodMoodListener())
             aiService.startListening()
         })
@@ -85,10 +93,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun proceedGoodMood(query: String, response: String) {
-        displayView = WHAT_WAS_SAID
         whatWeSaid.text = query
-        displayView = GOOD_MOOD
         tts.speak(response, {
+            displayView = GOOD_MOOD
+            runBlocking {
+                delay(1000)
+            }
+        }, {
             aiService.setListener(createGoodMoodListener())
             aiService.startListening()
         })
