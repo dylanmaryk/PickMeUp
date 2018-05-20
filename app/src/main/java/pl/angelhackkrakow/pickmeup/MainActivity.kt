@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -23,8 +24,16 @@ class MainActivity : AppCompatActivity() {
                     onGoodMood = { query, response -> proceedGoodMood(query, response) }
                     onOkMood = { query, response -> proceedOkMood(query, response) }
                     onBadMood = { query, response -> proceedBadMood(query, response) }
+                    onLonely = { query, response -> proceedLonely(query, response) }
                     onUnknown = { query, response -> listenAgain() }
                 }
+    }
+
+    private fun proceedLonely(query: String, response: String) {
+        displayView = LONELY_MOOD
+        tts.speak(response, {
+            Log.d("proceedLonely", "on Done speaking  lonely")
+        })
     }
 
     private val config by lazy {
@@ -109,6 +118,18 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun launchMeetup(keyword: String) {
+        startActivity(
+                Intent(Intent.ACTION_VIEW, createMeetupUri(keyword))
+        )
+    }
+
+    fun createMeetupUri(keyword: String): Uri {
+        return Uri.parse(
+                "https://www.meetup.com/find/events/?allMeetups=false&keywords=$keyword&radius=100&userFreeform=Warsaw%2C+Poland&mcId=z1032106&mcName=Warsaw%2C+PL&eventFilter=mysugg"
+        )
+    }
+
     companion object {
         const val HI_MIKE = 0
         const val LISTENING = 1
@@ -116,6 +137,7 @@ class MainActivity : AppCompatActivity() {
         const val OK_MOOD = 3
         const val GOOD_MOOD = 4
         const val BAD_MOOD = 5
+        const val LONELY_MOOD = 6
 
         const val DIALOG_FLOW_TOKEN = "dbb59867471149ecafd254c7263b8fd7"
         const val NEISTAT_BANGERS = "spotify:user:1244785970:playlist:0YybZd87fuKnKxP5DloOsx"

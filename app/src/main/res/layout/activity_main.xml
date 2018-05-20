@@ -9,10 +9,10 @@
     <ViewAnimator
         android:id="@+id/viewAnimator"
         android:layout_width="match_parent"
-        android:inAnimation="@android:anim/fade_in"
-        android:outAnimation="@android:anim/fade_out"
         android:layout_height="match_parent"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out">
 
         <ImageView
             android:id="@+id/view"
@@ -87,6 +87,12 @@
             android:layout_height="match_parent"
             android:scaleType="fitXY"
             android:src="@drawable/badmood" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/lonelymood" />
 
 
     </ViewAnimator>

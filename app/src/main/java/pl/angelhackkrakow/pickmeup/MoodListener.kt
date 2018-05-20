@@ -10,14 +10,14 @@ class MoodListener() : SimplifiedAIListener() {
     var onOkMood: (query: String, response: String) -> Unit = { _, _ -> }
     var onBadMood: (query: String, response: String) -> Unit = { _, _ -> }
     var onUnknown: (query: String, response: String) -> Unit = { _, _ -> }
+    var onLonely: (query: String, response: String) -> Unit = { _, _ -> }
 
     private val gson by lazy {
         GsonBuilder().setPrettyPrinting().create()
     }
 
     override fun onResult(result: AIResponse) {
-//            Log.d("onResult", gson.toJson(result))
-        Thread.sleep(1000)
+        Log.d("onResult", gson.toJson(result))
         processMood(Mood.from(result.result.parameters.keys), result)
     }
 
@@ -36,6 +36,7 @@ class MoodListener() : SimplifiedAIListener() {
         when (mood) {
             Mood.BAD -> onBadMood(query, response)
             Mood.GOOD -> onGoodMood(query, response)
+            Mood.LONLEY -> onLonely(query, response)
             else -> onUnknown(query, response)
         }
     }

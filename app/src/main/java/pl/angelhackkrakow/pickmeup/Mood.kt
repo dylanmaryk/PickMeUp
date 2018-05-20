@@ -1,7 +1,8 @@
 package pl.angelhackkrakow.pickmeup
 
 enum class Mood(val mood: String) {
-    BAD("BadMood"), OK("OkMood"), GOOD("GoodMood"), UNKNOWN("unknown");
+    BAD("BadMood"), OK("OkMood"), GOOD("GoodMood"), LONLEY("LonelyMood"),
+    UNKNOWN("unknown");
 
     companion object {
         fun from(params: Set<String>): Mood {
