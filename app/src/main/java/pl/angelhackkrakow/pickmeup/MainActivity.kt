@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private val aiService by lazy {
-        AIService.getService(this, config).apply { setListener(createMoodListener()) }
+        AIService.getService(this, config)
     }
 
     private fun createMoodListener(): MoodListener {
@@ -31,9 +31,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun proceedLonely(query: String, response: String) {
         displayView = LONELY_MOOD
-        tts.speak(response, {
+        tts.speak(response, Runnable {
+            aiService.stopListening()
+            aiService.startListening()
             Log.d("proceedLonely", "on Done speaking  lonely")
         })
+    }
+
+    private fun proceedYesNoMeetup() {
+        displayView = MEETUP_TYPE
     }
 
     private val config by lazy {
@@ -83,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun proceedBadMood(query: String, response: String) {
         displayView = BAD_MOOD
-        tts.speak(response, {
+        tts.speak(response, Runnable {
             aiService.setListener(createGoodMoodListener())
             aiService.startListening()
         })
@@ -94,10 +100,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun proceedGoodMood(query: String, response: String) {
-        displayView = WHAT_WAS_SAID
-        whatWeSaid.text = query
         displayView = GOOD_MOOD
-        tts.speak(response, {
+        tts.speak(response, Runnable {
             aiService.setListener(createGoodMoodListener())
             aiService.startListening()
         })
@@ -138,6 +142,7 @@ class MainActivity : AppCompatActivity() {
         const val GOOD_MOOD = 4
         const val BAD_MOOD = 5
         const val LONELY_MOOD = 6
+        const val MEETUP_TYPE = 7
 
         const val DIALOG_FLOW_TOKEN = "dbb59867471149ecafd254c7263b8fd7"
         const val NEISTAT_BANGERS = "spotify:user:1244785970:playlist:0YybZd87fuKnKxP5DloOsx"
