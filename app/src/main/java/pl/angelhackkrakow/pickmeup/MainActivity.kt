@@ -1,95 +1,119 @@
 package pl.angelhackkrakow.pickmeup
 
+import ai.api.AIListener
 import ai.api.android.AIConfiguration
-import ai.api.model.AIError
-import ai.api.model.AIResponse
-import ai.api.ui.AIButton
+import ai.api.android.AIService
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
+
 class MainActivity : AppCompatActivity() {
 
-    private val tts by lazy { TTS(this) }
+    private val aiService by lazy {
+        AIService.getService(this, config).apply { setListener(createMoodListener()) }
+    }
+
+    private fun createMoodListener(): MoodListener {
+        return MoodListener(
+                { saidThis -> showWhatSaid(saidThis) },
+                { sayThis -> tts.speak(sayThis) })
+                .apply {
+                    onGoodMood = { proceedGoodMood() }
+                    onOkMood = { proceedOkMood() }
+                    onBadMood = { proceedBadMood() }
+                    onUnknown = { listenAgain() }
+                }
+    }
+
     private val config by lazy {
         AIConfiguration(DIALOG_FLOW_TOKEN,
                 ai.api.AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System)
     }
 
+    private val tts by lazy { TTS(this) }
+
+    private var displayView: Int
+        get() = viewAnimator.displayedChild
+        set(value) {
+            viewAnimator.displayedChild = value
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initMicButton()
-        tts.speak("Hi Mike, how are you feeling today?")
+        tts.init(INIT_SPEECH, this::onReady, this::onPostSpeech)
     }
 
-    private fun initMicButton() {
-        micButton.initialize(config)
-        micButton.setResultsListener(createMoodListener())
+    private fun onReady() {
+        displayView = HI_MIKE
     }
 
-    private fun createMoodListener(): MoodListener {
-        return MoodListener { speech -> tts.speak(speech) }
-                .apply {
-                    onGoodMood = { proceedGoodMood() }
-                    onOkMood = { proceedOkMood() }
-                    onBadMood = { proceedBadMood() }
-                }
+    private fun onPostSpeech() {
+        runOnUiThread {
+            displayView = LISTENING
+            startListening()
+        }
+    }
+
+    private fun startListening() {
+        aiService.startListening()
+    }
+
+    private fun listenAgain() {
+        displayView = LISTENING
+        aiService.startListening()
+    }
+
+    private fun showWhatSaid(speech: String) {
+        whatWeSaid.text = speech
     }
 
     private fun proceedBadMood() {
-
+        displayView = BAD_MOOD
     }
 
     private fun proceedOkMood() {
-
+        displayView = OK_MOOD
     }
 
     private fun proceedGoodMood() {
-
+        displayView = GOOD_MOOD
+        aiService.setListener(createGoodMoodListener())
     }
 
-    class MoodListener(val speech: (String) -> Unit) : AIButton.AIButtonListener {
+    private fun createGoodMoodListener(): AIListener {
+        return GoodMoodListener(
+                this::runSpotify, this::callFamily
+        ).apply {
 
-        var onGoodMood: () -> Unit = {}
-        var onOkMood: () -> Unit = {}
-        var onBadMood: () -> Unit = {}
-
-
-        override fun onCancelled() {
-        }
-
-        override fun onResult(result: AIResponse) {
-            speech(result.result.fulfillment.speech)
-            processMood(Mood.from(result.result.action))
-        }
-
-        private fun processMood(mood: Mood) {
-            when (mood) {
-                Mood.BAD -> onBadMood()
-                Mood.OK -> onOkMood()
-                Mood.GOOD -> onGoodMood()
-            }
-        }
-
-        override fun onError(error: AIError?) {
         }
     }
 
-    enum class Mood(val mood: String) {
-        BAD("BadMood"), OK("OkMood"), GOOD("GoodMood");
+    private fun runSpotify() {
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(NEISTAT_BANGERS)))
+    }
 
-        companion object {
-
-            fun from(value: String): Mood {
-                return Mood.values()
-                        .firstOrNull { mood -> mood.mood.equals(value, true) } ?: OK
-            }
-        }
+    @SuppressLint("MissingPermission")
+    private fun callFamily() {
+        val intent = Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "666-666-666"))
+        startActivity(intent)
     }
 
     companion object {
+        const val HI_MIKE = 0
+        const val LISTENING = 1
+        const val WHAT_WAS_SAID = 2
+        const val OK_MOOD = 3
+        const val GOOD_MOOD = 4
+        const val BAD_MOOD = 5
+
         const val DIALOG_FLOW_TOKEN = "dbb59867471149ecafd254c7263b8fd7"
+        const val NEISTAT_BANGERS = "spotify:user:1244785970:playlist:0YybZd87fuKnKxP5DloOsx"
+        const val INIT_SPEECH = "Hi Mike. How are you feeling today?"
     }
 }
