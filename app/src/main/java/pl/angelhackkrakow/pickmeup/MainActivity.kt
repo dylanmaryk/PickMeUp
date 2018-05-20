@@ -18,14 +18,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createMoodListener(): MoodListener {
-        return MoodListener(
-                { saidThis -> showWhatSaid(saidThis) },
-                { sayThis -> tts.speak(sayThis) })
+        return MoodListener()
                 .apply {
-                    onGoodMood = { proceedGoodMood() }
-                    onOkMood = { proceedOkMood() }
-                    onBadMood = { proceedBadMood() }
-                    onUnknown = { listenAgain() }
+                    onGoodMood = { query, response -> proceedGoodMood(query, response) }
+                    onOkMood = { query, response -> proceedOkMood(query, response) }
+                    onBadMood = { query, response -> proceedBadMood(query, response) }
+                    onUnknown = { query, response -> listenAgain() }
                 }
     }
 
@@ -56,11 +54,12 @@ class MainActivity : AppCompatActivity() {
     private fun onPostSpeech() {
         runOnUiThread {
             displayView = LISTENING
-            startListening()
+            startListeningForMood()
         }
     }
 
-    private fun startListening() {
+    private fun startListeningForMood() {
+        aiService.setListener(createMoodListener())
         aiService.startListening()
     }
 
@@ -73,25 +72,31 @@ class MainActivity : AppCompatActivity() {
         whatWeSaid.text = speech
     }
 
-    private fun proceedBadMood() {
+    private fun proceedBadMood(query: String, response: String) {
         displayView = BAD_MOOD
+        tts.speak(response, {
+            aiService.setListener(createGoodMoodListener())
+            aiService.startListening()
+        })
     }
 
-    private fun proceedOkMood() {
-        displayView = OK_MOOD
+    private fun proceedOkMood(query: String, response: String) {
+        proceedGoodMood(query, response)
     }
 
-    private fun proceedGoodMood() {
+    private fun proceedGoodMood(query: String, response: String) {
+        displayView = WHAT_WAS_SAID
+        whatWeSaid.text = query
         displayView = GOOD_MOOD
-        aiService.setListener(createGoodMoodListener())
+        tts.speak(response, {
+            aiService.setListener(createGoodMoodListener())
+            aiService.startListening()
+        })
     }
 
     private fun createGoodMoodListener(): AIListener {
         return GoodMoodListener(
-                this::runSpotify, this::callFamily
-        ).apply {
-
-        }
+                this::runSpotify, this::callFamily)
     }
 
     private fun runSpotify() {
