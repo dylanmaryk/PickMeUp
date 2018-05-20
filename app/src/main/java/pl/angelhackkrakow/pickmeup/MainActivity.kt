@@ -54,11 +54,12 @@ class MainActivity : AppCompatActivity() {
     private fun onPostSpeech() {
         runOnUiThread {
             displayView = LISTENING
-            startListening()
+            startListeningForMood()
         }
     }
 
-    private fun startListening() {
+    private fun startListeningForMood() {
+        aiService.setListener(createMoodListener())
         aiService.startListening()
     }
 
@@ -73,6 +74,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun proceedBadMood(query: String, response: String) {
         displayView = BAD_MOOD
+        tts.speak(response, {
+            aiService.setListener(createGoodMoodListener())
+            aiService.startListening()
+        })
     }
 
     private fun proceedOkMood(query: String, response: String) {
